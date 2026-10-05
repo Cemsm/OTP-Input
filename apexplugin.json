@@ -1,0 +1,44 @@
+{
+  "name": "OTP-Input",
+  "version": "0.1.0",
+  "description": "Modern and customizable OTP, PIN and verification-code item plugin for Oracle APEX. Requires APEX 26.1 or later.",
+  "keywords": [
+    "otp",
+    "pin",
+    "verification",
+    "item",
+    "authentication"
+  ],
+  "homepage": "https://github.com/Cemsm/OTP-Input",
+  "bugs": {
+    "url": "https://github.com/Cemsm/OTP-Input/issues",
+    "email": "cemsm@proton.me"
+  },
+  "license": "MIT",
+  "commercial": "No",
+  "author": {
+    "name": "Mohammad Saleh Moeinadini (Cemsm)",
+    "email": "cemsm@proton.me",
+    "url": "https://github.com/Cemsm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cemsm/OTP-Input.git"
+  },
+  "oracle": {
+    "versions": [
+      "23.26.1.0.0"
+    ],
+    "apex": {
+      "versions": [
+        "26.1.0"
+      ],
+      "plugin": {
+        "internalName": "COM_CEMSM_OTP_INPUT",
+        "type": "item",
+        "demo": "https://cemsm.github.io/OTP-Input/",
+        "previewImage": "https://raw.githubusercontent.com/Cemsm/OTP-Input/main/screenshots/preview.png"
+      }
+    }
+  }
+}

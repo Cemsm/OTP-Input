@@ -166,14 +166,11 @@ Main classes include:
 
 A standalone visual demo is included in `index.html`.
 
-After enabling GitHub Pages for the repository, the demo will normally
-be available at:
 
 ``` text
-https://YOUR_GITHUB_USERNAME.github.io/oracle-apex-otp-input/
+https://cemsm.github.io/OTP-Input/
 ```
 
-Replace `YOUR_GITHUB_USERNAME` and the repository name if necessary.
 
 > The GitHub Pages demo reproduces the plug-in's front-end experience.
 > The actual Oracle APEX integration requires the plug-in to be

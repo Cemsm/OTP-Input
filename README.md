@@ -207,8 +207,7 @@ Initial public release.
 
 ## License
 
-Add the license you want to use for the project (for example, MIT) and
-include a `LICENSE` file in the repository.
+MIT License.
 
 ## Contributing
 

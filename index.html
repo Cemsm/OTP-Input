@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live demo of OTP Input, a customizable Oracle APEX Item Plug-in for OTP, PIN and verification-code inputs.">
+  <title>OTP Input for Oracle APEX — Demo</title>
+  <style>
+    :root {
+      --accent: #2563eb;
+      --accent-rgb: 37, 99, 235;
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-soft: #f1f3f6;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d8dee8;
+      --shadow: 0 24px 70px rgba(20, 31, 55, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(var(--accent-rgb), .08), transparent 28rem),
+        var(--bg);
+    }
+
+    button, input { font: inherit; }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 800;
+      letter-spacing: -.02em;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), .10);
+      border: 1px solid rgba(var(--accent-rgb), .14);
+    }
+
+    .brand-mark svg { width: 20px; height: 20px; }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 650;
+    }
+
+    .hero {
+      padding: 76px 0 34px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid rgba(var(--accent-rgb), .15);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), .07);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 20px auto 16px;
+      font-size: clamp(2.5rem, 7vw, 5.2rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero p {
+      max-width: 700px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      line-height: 1.7;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 25px;
+    }
+
+    .chip {
+      padding: 8px 11px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: #475467;
+      background: rgba(255,255,255,.72);
+      font-size: .82rem;
+      font-weight: 650;
+    }
+
+    .demo-section {
+      padding: 40px 0 88px;
+    }
+
+    .demo-shell {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: clamp(18px, 4vw, 42px);
+      border: 1px solid #e4e8ef;
+      border-radius: 28px;
+      background: rgba(255,255,255,.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .section-label {
+      margin-bottom: 18px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .otp-wrapper {
+      --container-bg: #f1f2f4;
+      width: min(100%, 520px);
+      margin: 0 auto;
+      overflow: hidden;
+      border: 1px solid #cfd5df;
+      border-radius: 14px;
+      background: var(--container-bg);
+      box-shadow: 0 12px 30px rgba(20, 31, 55, .07);
+    }
+
+    .otp-header {
+      position: relative;
+      isolation: isolate;
+      min-height: 122px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: color-mix(in srgb, var(--accent) 12%, var(--container-bg));
+    }
+
+    .otp-header::before {
+      content: "•  7  *  •  3  •  *  9  •  1  *  •  6  •  *  4  •  •  2  *  •  8  •  *  5  •  0  *  •  7  •  *  3  •";
+      position: absolute;
+      top: 50%;
+      left: -10%;
+      z-index: -1;
+      width: 120%;
+      transform: translate(-2%, -50%);
+      color: var(--accent);
+      opacity: .07;
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 2.5;
+      letter-spacing: .8rem;
+      user-select: none;
+      pointer-events: none;
+      animation: patternMove 18s linear infinite;
+    }
+
+    @keyframes patternMove {
+      from { transform: translate(-2%, -50%); }
+      to   { transform: translate(6%, -50%); }
+    }
+
+    .lock {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.85);
+      border-radius: 50%;
+      box-shadow: 0 8px 22px rgba(20,31,55,.08);
+      backdrop-filter: blur(5px);
+    }
+
+    .lock svg { width: 31px; height: 31px; }
+
+    .otp-body {
+      padding: 24px 22px 28px;
+      text-align: center;
+    }
+
+    .otp-title {
+      margin-bottom: 18px;
+      font-size: .98rem;
+      font-weight: 700;
+    }
+
+    .otp-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      direction: ltr;
+    }
+
+    .otp-box {
+      width: 48px;
+      height: 48px;
+      min-width: 0;
+      padding: 0 0 4px;
+      border: 1px solid #9ba4b3;
+      border-radius: 999px;
+      outline: none;
+      color: var(--text);
+      background: #fff;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: normal;
+      caret-color: var(--accent);
+      transform: translateY(0) scale(1);
+      transform-origin: center;
+      transition:
+        transform .32s cubic-bezier(.22,1,.36,1),
+        box-shadow .32s cubic-bezier(.22,1,.36,1),
+        border-color .24s ease,
+        opacity .24s ease;
+    }
+
+    .otp-box:hover:not(:focus) {
+      border-color: color-mix(in srgb, var(--accent) 60%, #9ba4b3);
+      transform: translateY(-1px) scale(1.015);
+      box-shadow: 0 4px 8px rgba(0,0,0,.06), 0 7px 16px rgba(0,0,0,.05);
+    }
+
+    @keyframes focusIn {
+      0%   { transform: translateY(0) scale(1); }
+      55%  { transform: translateY(-6px) scale(1.075); }
+      78%  { transform: translateY(-3px) scale(1.045); }
+      100% { transform: translateY(-4px) scale(1.06); }
+    }
+
+    .otp-box:focus {
+      border-color: var(--accent);
+      transform: translateY(-4px) scale(1.06);
+      box-shadow:
+        0 0 0 3px rgba(var(--accent-rgb), .20),
+        0 0 12px rgba(var(--accent-rgb), .22),
+        0 0 28px rgba(var(--accent-rgb), .14),
+        0 14px 28px rgba(0,0,0,.15),
+        0 6px 12px rgba(0,0,0,.09);
+      animation: focusIn .42s cubic-bezier(.22,1,.36,1);
+    }
+
+    .otp-inputs:focus-within .otp-box:not(:focus) {
+      opacity: .88;
+      transform: scale(.985);
+    }
+
+    .otp-box.filled { border-color: color-mix(in srgb, var(--accent) 75%, #9ba4b3); }
+
+    .demo-meta {
+      min-height: 24px;
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .demo-meta strong { color: var(--accent); }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .control {
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: #344054;
+      background: #fff;
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 700;
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .control:hover {
+      transform: translateY(-1px);
+      border-color: rgba(var(--accent-rgb), .4);
+      box-shadow: 0 5px 14px rgba(20,31,55,.07);
+    }
+
+    .control.active {
+      color: var(--accent);
+      border-color: rgba(var(--accent-rgb), .35);
+      background: rgba(var(--accent-rgb), .07);
+    }
+
+    footer {
+      padding: 0 0 42px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .82rem;
+    }
+
+    @media (max-width: 560px) {
+      .hero { padding-top: 52px; }
+      .otp-body { padding-inline: 12px; }
+      .otp-inputs { gap: 6px; }
+      .otp-box { width: 40px; height: 40px; font-size: 1.05rem; }
+      .otp-header { min-height: 108px; }
+      .lock { width: 64px; height: 64px; }
+      .lock svg { width: 27px; height: 27px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <nav>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+          </svg>
+        </span>
+        OTP Input for Oracle APEX
+      </div>
+      <a class="nav-link" href="#demo">Live Demo</a>
+    </nav>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">Oracle APEX Item Plug-in · v0.1.0</span>
+        <h1>OTP input that feels native to APEX.</h1>
+        <p>A polished, theme-aware item plug-in for OTPs, PINs and verification codes, with masking, paste support, keyboard navigation, custom events and smooth interactions.</p>
+        <div class="chips" aria-label="Features">
+          <span class="chip">4–8 Characters</span>
+          <span class="chip">Numeric & Alphanumeric</span>
+          <span class="chip">Masking</span>
+          <span class="chip">Paste Support</span>
+          <span class="chip">Theme Aware</span>
+          <span class="chip">Responsive</span>
+        </div>
+      </section>
+
+      <section class="demo-section" id="demo">
+        <div class="demo-shell">
+          <div class="section-label">Interactive Demo</div>
+
+          <div class="otp-wrapper">
+            <div class="otp-header">
+              <div class="lock" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+                  <path d="M12 14v2.5"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="otp-body">
+              <div class="otp-title">Enter The Code</div>
+              <div class="otp-inputs" id="otpInputs" aria-label="One-time password demo"></div>
+              <div class="demo-meta" id="status">Type a 6-digit code</div>
+            </div>
+          </div>
+
+          <div class="controls" aria-label="Demo options">
+            <button class="control active" id="maskButton" type="button">Masked</button>
+            <button class="control" id="clearButton" type="button">Clear</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>COM_CEMSM_OTP_INPUT · Standalone GitHub Pages preview</footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      const length = 6;
+      const root = document.getElementById("otpInputs");
+      const status = document.getElementById("status");
+      const maskButton = document.getElementById("maskButton");
+      const clearButton = document.getElementById("clearButton");
+      const values = Array(length).fill("");
+      const boxes = [];
+      let masked = true;
+
+      function render() {
+        boxes.forEach((box, i) => {
+          box.value = values[i] ? (masked ? "•" : values[i]) : "";
+          box.classList.toggle("filled", Boolean(values[i]));
+        });
+
+        const code = values.join("");
+        status.innerHTML = code.length === length
+          ? "<strong>Code complete</strong> · " + (masked ? "••••••" : code)
+          : "Type a 6-digit code";
+      }
+
+      function focusAt(index) {
+        boxes[Math.max(0, Math.min(index, length - 1))]?.focus();
+      }
+
+      function nextEmpty() {
+        const i = values.findIndex(v => !v);
+        return i === -1 ? length - 1 : i;
+      }
+
+      function setFrom(index, text) {
+        const digits = String(text).replace(/\D/g, "").split("");
+        if (!digits.length) return;
+        let cursor = index;
+        digits.forEach(digit => {
+          if (cursor < length) values[cursor++] = digit;
+        });
+        render();
+        focusAt(Math.min(cursor, length - 1));
+      }
+
+      for (let i = 0; i < length; i++) {
+        const box = document.createElement("input");
+        box.className = "otp-box";
+        box.type = "text";
+        box.inputMode = "numeric";
+        box.autocomplete = i === 0 ? "one-time-code" : "off";
+        box.setAttribute("aria-label", `Digit ${i + 1} of ${length}`);
+
+        box.addEventListener("focus", () => {
+          const firstEmpty = values.findIndex(v => !v);
+          if (firstEmpty !== -1 && i > firstEmpty) {
+            focusAt(firstEmpty);
+            return;
+          }
+          box.select();
+        });
+
+        box.addEventListener("input", () => {
+          const raw = box.value.replace(/•/g, "");
+          if (!raw) {
+            values[i] = "";
+            render();
+            return;
+          }
+          setFrom(i, raw);
+        });
+
+        box.addEventListener("keydown", event => {
+          if (event.key === "Backspace") {
+            event.preventDefault();
+            if (values[i]) {
+              values[i] = "";
+              render();
+              focusAt(i);
+            } else if (i > 0) {
+              values[i - 1] = "";
+              render();
+              focusAt(i - 1);
+            }
+          } else if (event.key === "Delete") {
+            event.preventDefault();
+            values[i] = "";
+            render();
+          } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            focusAt(i - 1);
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            focusAt(i + 1);
+          }
+        });
+
+        box.addEventListener("paste", event => {
+          event.preventDefault();
+          setFrom(i, event.clipboardData.getData("text"));
+        });
+
+        boxes.push(box);
+        root.appendChild(box);
+      }
+
+      maskButton.addEventListener("click", () => {
+        masked = !masked;
+        maskButton.textContent = masked ? "Masked" : "Visible";
+        maskButton.classList.toggle("active", masked);
+        render();
+      });
+
+      clearButton.addEventListener("click", () => {
+        values.fill("");
+        render();
+        focusAt(0);
+      });
+
+      render();
+      setTimeout(() => focusAt(nextEmpty()), 250);
+    }());
+  </script>
+</body>
+</html>
